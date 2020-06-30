@@ -27,6 +27,8 @@ module.exports = {
         // 关闭 var 关键字的提示
         "no-var":'off',
         // 警告 case 穿透
-        "no-fallthrough":'warn'
+        "no-fallthrough":'warn',
+        // 优先使用剩余参数（rest） `...`
+        "prefer-rest-params":"off",
     }
 };
