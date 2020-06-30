@@ -1,0 +1,47 @@
+{
+  "name": "fun-exp",
+  "version": "1.0.0",
+  "description": "fun-exp 通过 Function.prototype 对函数对象进行了扩展",
+  "main": "dist/fun-exp.cjs.js",
+  "module": "dist/fun-exp.es.js",
+  "types": "dist/index.d.ts",
+  "sideEffects": false,
+  "homepage": "https://github.com/GuoBinyong/fun-exp#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/GuoBinyong/fun-exp"
+  },
+  "keywords": [
+    "Function",
+    "函数",
+    "function expand",
+    "函数扩展"
+  ],
+  "author": "郭斌勇",
+  "license": "MIT",
+  "files": [
+    "dist/[^.]*",
+    "types/[^.]*"
+  ],
+  "scripts": {
+    "build": "rollup -c",
+    "dev": "rollup -c -w",
+    "test": "node test/test.ts",
+    "pretest": "npm run build"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^11.1.0",
+    "@rollup/plugin-node-resolve": "^7.1.3",
+    "@rollup/plugin-typescript": "^4.1.2",
+    "@typescript-eslint/eslint-plugin": "^3.0.0",
+    "@typescript-eslint/parser": "^3.0.0",
+    "eslint": "^7.0.0",
+    "package-tls": "^1.0.2",
+    "path": "^0.12.7",
+    "rollup": "^2.7.2",
+    "rollup-plugin-terser": "^6.1.0",
+    "ts-node": "^8.9.1",
+    "tslib": "^2.0.0",
+    "typescript": "^3.8.3"
+  }
+}
