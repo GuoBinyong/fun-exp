@@ -1,6 +1,6 @@
 {
   "name": "fun-exp",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "description": "fun-exp 通过 Function.prototype 对函数对象进行了扩展",
   "main": "dist/fun-exp.cjs.js",
   "module": "dist/fun-exp.es.js",
