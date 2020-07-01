@@ -1,6 +1,7 @@
 import {removeScope,getBaseNameOfHumpFormat,getDependencieNames} from "package-tls";
 import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
+import babel from '@rollup/plugin-babel';
 import typescript from '@rollup/plugin-typescript';
 import { terser } from "rollup-plugin-terser";
 import {dirname} from "path"
@@ -20,7 +21,6 @@ import tsconfig from "./tsconfig.json";
 /*
 共用的配置
 */
-
 
 
 
@@ -53,6 +53,53 @@ description: ${pkg.description || ""}
 
 
 
+
+
+// 默认查找的文件扩展名
+const extensions = ['.tsx', '.ts','.jsx', '.mjs', '.js', '.json'];
+
+
+// 预设
+const presets = [
+	'@babel/preset-env'
+];
+
+// 插件
+const plugins = [
+	// Stage 2
+	["@babel/plugin-proposal-decorators", { "legacy": false, "decoratorsBeforeExport": true }],
+	"@babel/plugin-proposal-function-sent",
+	"@babel/plugin-proposal-export-namespace-from",
+	"@babel/plugin-proposal-numeric-separator",
+	"@babel/plugin-proposal-throw-expressions",
+
+	// Stage 3
+	"@babel/plugin-syntax-dynamic-import",
+	"@babel/plugin-syntax-import-meta",
+	["@babel/plugin-proposal-class-properties", { "loose": true }],
+	"@babel/plugin-proposal-json-strings",
+
+	/*
+	@babel/plugin-transform-runtime 能够重复使用 Babel 的注入帮助器 Helper 代码，以节省代码大小。
+	注意：如果 rollup 的 format 设置为 "es" ， 则应将 useESModules 设置为 true，否则，应将 useESModules 设置 false ；
+	*/
+	['@babel/plugin-transform-runtime', { useESModules: false }]
+];
+
+// babel的共用配置
+const babelConf = {
+	babelHelpers:"runtime",    //指定插入 babel 的 帮助器 Helper 的方式
+	exclude: ['node_modules/**'],  // 指定应被 babel 忽略的文件的匹配模式；
+	extensions: extensions,  // 应该被 babel 转换的所有文件的扩展名数组；这些扩展名的文件会被 babel 处理，其它文件刚会被 babel 忽略；默认值：['.js', '.jsx', '.es6', '.es', '.mjs']
+	presets: presets,
+	/*
+	@babel/plugin-transform-runtime 能够重复使用 Babel 的注入帮助器 Helper 代码，以节省代码大小。
+	注意：如果 rollup 的 format 设置为 "es" ， 则应将 useESModules 设置为 true，否则，应将 useESModules 设置 false ；
+	*/
+	plugins: plugins
+};
+
+
 // 共用的 rollup 配置
 const shareConf = {
 	input: input,
@@ -71,7 +118,7 @@ const shareConf = {
 			extensions   类型: Array[...String]    默认值: ['.mjs', '.js', '.json', '.node']
 			扩展文件名
 			*/
-			extensions:['.ts', '.mjs', '.js', '.json', '.node']
+			extensions: extensions
 		}),
 		commonjs(), // 将依赖的模块从 CommonJS 模块规范转换成 ES2015 模块规范
 		typescript({
@@ -79,9 +126,12 @@ const shareConf = {
 			declarationDir: tsconfig.declarationDir || dirname(pkg.types || pkg.typings || (outputDir+"/*")),
 			// 用来给 输出目录 outDir 提供源文件目录结构的，以便生成的文件中的导入导出能够正确地访问；
 			rootDir: dirname(input),
-		}) // 将 TypeScript 转换为 JavaScript
+		}),  // 将 TypeScript 转换为 JavaScript
+		babel(babelConf)
 	]
 };
+
+
 
 
 
@@ -95,10 +145,26 @@ export default [
 	*/
 	{
 		...shareConf,
-		output: [
-			{...shareOutput, format: 'es' },  // ES module
-			{...shareOutput, format: 'cjs' }, // CommonJS
+		output: {...shareOutput, format: 'es' },  // ES module
+		plugins: [
+			...shareConf.plugins.slice(0,shareConf.plugins.length - 1),
+			babel({
+				...babelConf,
+				plugins: [
+					...plugins.slice(0,plugins.length - 1),
+					/*
+					@babel/plugin-transform-runtime 能够重复使用 Babel 的注入帮助器 Helper 代码，以节省代码大小。
+					注意：如果 rollup 的 format 设置为 "es" ， 则应将 useESModules 设置为 true，否则，应将 useESModules 设置 false ；
+					*/
+					['@babel/plugin-transform-runtime', { useESModules: true }]
+				]
+			})
 		]
+	},
+
+	{
+		...shareConf,
+		output: {...shareOutput, format: 'cjs' }, // CommonJS
 	},
 
 
