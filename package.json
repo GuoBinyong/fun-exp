@@ -5,7 +5,7 @@
   "main": "dist/fun-exp.cjs.js",
   "module": "dist/fun-exp.es.js",
   "types": "dist/index.d.ts",
-  "sideEffects": false,
+  "sideEffects": true,
   "homepage": "https://github.com/GuoBinyong/fun-exp#readme",
   "repository": {
     "type": "git",
